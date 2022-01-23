@@ -16,7 +16,7 @@ class Kolokvium extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.only(left: 5, right: 5),
                 margin: const EdgeInsets.only(left: 10, right: 10),
                 child: Text(
                   _name,
