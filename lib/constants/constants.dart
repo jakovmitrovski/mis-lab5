@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-// const kWebPushCertificate = 'BOUyo22lEGPr3Y6g-o1AxpQRxtsTusokfI09MztSjSyQp71zc8qgt8iLLp4bSXgxdP3wED-AqqnRZcx0mrGB9fE';
+const kApiKey = "AIzaSyDV7OkJFsi6_goZimBfZeRR0vCTGdEoj1Q";
 
 const kTextFieldDecoration = InputDecoration(
   hintText: 'Enter a value',

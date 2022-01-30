@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mis_lab3/screens/add_location_event.dart';
 import 'package:mis_lab3/screens/calendar_screen.dart';
 import 'package:mis_lab3/screens/login_screen.dart';
+import 'package:mis_lab3/screens/map_screen.dart';
 import 'package:mis_lab3/screens/register_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -61,6 +63,30 @@ class MyApp extends StatelessWidget {
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegistrationScreen(),
         '/home': (context) => const MyHomePage(title: 'MIS Lab 5'),
+        '/add-location': (context) => AddLocationEvent(notify: (reminder, address) {
+          print(reminder);
+          print(address);
+          flutterLocalNotificationsPlugin
+              .show(0,
+                'Добредојде на $address!',
+                'Не заборавај да $reminder',
+                NotificationDetails(
+                  android: AndroidNotificationDetails(
+                      channel.id,
+                      channel.name,
+                      channelDescription: channel.description,
+                      color: Colors.blue,
+                      playSound: true,
+                      icon: '@mipmap/ic_launcher'
+                  )
+              )
+              )
+              .then((result) {})
+              .catchError((onError) {
+            print('[flutterLocalNotificationsPlugin.show] ERROR: $onError');
+          });
+        },),
+        '/map': (context) => MapScreen()
       },
     );
   }
@@ -82,11 +108,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   final _auth = FirebaseAuth.instance;
   List<Map<String, dynamic> > elements = [];
+  List<Map<String, dynamic> > locationEvents = [];
   final nameController = TextEditingController();
   final dateController = TextEditingController();
   final timeController = TextEditingController();
 
-  void loadFromDb() async {
+  Future<void> loadFromDb() async {
     List<Map<String, dynamic> > elems = [];
     await _firestore.collection('exams').where('userId', isEqualTo: loggedInUser!.uid).get().then((value) => {
       for(var elem in value.docs) {
@@ -94,8 +121,16 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     });
 
+    List<Map<String, dynamic> > locEvents = [];
+    await _firestore.collection('locationEvents').where('userId', isEqualTo: loggedInUser!.uid).get().then((value) => {
+      for(var elem in value.docs) {
+        locEvents.add(elem.data())
+      }
+    });
+
     setState(() {
       elements = elems;
+      locationEvents = locEvents;
     });
   }
 
@@ -192,6 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
             setState(() {
               loggedInUser = user;
             });
+            loadFromDb();
           }
         }
     );
@@ -199,9 +235,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
-    loadFromDb();
-
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
@@ -274,18 +307,43 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      ElevatedButton(
-                        child: Text('Календар'),
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/calendar', arguments: elements);
-                        },
+                      Expanded(
+                        flex: 1,
+                        child: ElevatedButton(
+                          child: Text('Календар'),
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/calendar', arguments: elements);
+                          },
+                        ),
                       ),
-                      ElevatedButton(
-                        child: Text('Одјави се'),
-                        onPressed: () {
-                          _auth.signOut();
-                          Navigator.pop(context);
-                        }
+                      Expanded(
+                        flex: 1,
+                        child: ElevatedButton(
+                          child: Text('Додади Локaција'),
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/add-location');
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: ElevatedButton(
+                          child: Text('Мапа'),
+                          onPressed: () async {
+                            await loadFromDb();
+                            Navigator.pushNamed(context, '/map', arguments: locationEvents);
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: ElevatedButton(
+                          child: Text('Одјави се'),
+                          onPressed: () {
+                            _auth.signOut();
+                            Navigator.pop(context);
+                          }
+                        ),
                       ),
                     ],
                   )
