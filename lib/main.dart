@@ -50,7 +50,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MIS Lab 4',
+      title: 'MIS Lab 5',
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
         '/calendar': (context) => const CalendarScreen(),
         '/login': (context) => LoginScreen(),
         '/register': (context) => RegistrationScreen(),
-        '/home': (context) => const MyHomePage(title: 'MIS Lab 4'),
+        '/home': (context) => const MyHomePage(title: 'MIS Lab 5'),
       },
     );
   }

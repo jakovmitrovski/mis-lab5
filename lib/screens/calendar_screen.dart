@@ -79,7 +79,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('MIS Lab 4'),
+        title: Text('MIS Lab 5'),
       ),
       body: SafeArea(
         child: Column(
